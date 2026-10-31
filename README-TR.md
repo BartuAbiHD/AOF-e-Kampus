@@ -1,4 +1,8 @@
-# AOF e-Kampus
+<p align="center">
+  <img src="assets/icon.png" alt="AOF e-Kampus" width="128" height="128">
+</p>
+
+<h1 align="center">AOF e-Kampus</h1>
 
 Türkçe | [English](README.md)
 
