@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="AOF e-Kampus" Language="1055" Codepage="1254" Version="1.0.0"
+           Manufacturer="AOF e-Kampus" UpgradeCode="6F1B7C52-3A4E-4D8B-9C21-5E0A7B9D4F13">
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" />
+    <MajorUpgrade DowngradeErrorMessage="Daha yeni bir sürüm zaten yüklü." />
+    <MediaTemplate EmbedCab="yes" />
+    <Icon Id="AppIcon" SourceFile="..\assets\icon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="AOF e-Kampus" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder" />
+      <Directory Id="DesktopFolder" />
+    </Directory>
+
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="MainExe" Guid="B2D4E6F8-1A3C-4B5D-8E7F-9A0B1C2D3E4F" Win64="yes">
+        <File Id="AppExe" Source="..\target\release\aof-ekampus.exe" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="ProgramMenuFolder">
+      <Component Id="StartMenuShortcut" Guid="C3E5F7A9-2B4D-4C6E-9F80-AB1C2D3E4F50">
+        <Shortcut Id="StartShortcut" Name="AOF e-Kampus" Target="[INSTALLFOLDER]aof-ekampus.exe"
+                  WorkingDirectory="INSTALLFOLDER" Icon="AppIcon" />
+        <RegistryValue Root="HKCU" Key="Software\AOF e-Kampus" Name="StartMenu" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="DesktopFolder">
+      <Component Id="DesktopShortcut" Guid="D4F6A8B0-3C5E-4D7F-A091-BC2D3E4F5061">
+        <Shortcut Id="DeskShortcut" Name="AOF e-Kampus" Target="[INSTALLFOLDER]aof-ekampus.exe"
+                  WorkingDirectory="INSTALLFOLDER" Icon="AppIcon" />
+        <RegistryValue Root="HKCU" Key="Software\AOF e-Kampus" Name="Desktop" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="Main" Title="AOF e-Kampus" Level="1">
+      <ComponentRef Id="MainExe" />
+      <ComponentRef Id="StartMenuShortcut" />
+      <ComponentRef Id="DesktopShortcut" />
+    </Feature>
+  </Product>
+</Wix>

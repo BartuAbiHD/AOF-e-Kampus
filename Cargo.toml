@@ -1,0 +1,18 @@
+[package]
+name = "aof-ekampus"
+version = "1.0.0"
+edition = "2021"
+description = "AOF e-Kampus"
+
+[dependencies]
+tao = "0.34"
+wry = "0.53"
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+[build-dependencies]
+winresource = "0.1"
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true

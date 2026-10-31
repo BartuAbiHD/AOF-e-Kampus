@@ -1,0 +1,11 @@
+/target
+/dist
+*.log
+*.wixobj
+*.wixpdb
+
+# Eski Electron sürümü (artık kullanılmıyor)
+node_modules/
+/main.js
+/package.json
+/package-lock.json
