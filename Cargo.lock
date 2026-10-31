@@ -14,6 +14,8 @@ version = "1.0.0"
 dependencies = [
  "image",
  "tao",
+ "webview2-com",
+ "windows",
  "winresource",
  "wry",
 ]

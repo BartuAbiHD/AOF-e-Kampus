@@ -12,7 +12,7 @@ Faculty (AOF) e-Kampus website, written in Rust with
 - Opens <https://ekampus.anadolu.edu.tr> in a native window.
 - **Remembers your login.** Session cookies are re-saved as persistent cookies
   (30 days), so the app stays signed in after restarting until you log out.
-- Browser language is forced to Turkish (`tr-TR`).
+- Browser language defaults to Turkish (`tr-TR`). Right-click → **Dil / Language** lets you pick from 39 languages (the app restarts to apply it).
 - Tiny binary (under 1 MB) and Windows installers (NSIS and MSI).
 
 ## Requirements

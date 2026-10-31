@@ -12,7 +12,7 @@ Windows'ta WebView2).
 - <https://ekampus.anadolu.edu.tr> adresini yerel bir pencerede açar.
 - **Oturumu hatırlar.** Oturum çerezleri kalıcı çereze (30 gün) çevrilir;
   çıkış yapmadığın sürece uygulamayı yeniden açınca oturumun açık kalır.
-- Tarayıcı dili Türkçe (`tr-TR`) olarak ayarlıdır.
+- Tarayıcı dili varsayılan olarak Türkçe'dir (`tr-TR`). Sağ tık → **Dil / Language** menüsünden 39 dil seçilebilir (uygulama yeniden başlar).
 - Küçük boyutlu (1 MB'ın altında) uygulama ve Windows kurulum dosyaları (NSIS ve MSI).
 
 ## Gereksinimler

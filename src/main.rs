@@ -1,5 +1,7 @@
 #![windows_subsystem = "windows"]
 
+mod lang;
+
 use std::{
     collections::HashSet,
     path::PathBuf,
@@ -10,12 +12,16 @@ use std::{
 use tao::{
     dpi::LogicalSize,
     event::{Event, WindowEvent},
-    event_loop::{ControlFlow, EventLoop},
+    event_loop::{ControlFlow, EventLoopBuilder},
     window::{Icon, WindowBuilder},
 };
 #[cfg(windows)]
 use wry::WebViewBuilderExtWindows;
 use wry::{cookie::time::OffsetDateTime, WebContext, WebViewBuilder};
+
+enum UserEvent {
+    Restart,
+}
 
 const START_URL: &str = "https://ekampus.anadolu.edu.tr";
 const ALLOWED_HOST: &str = "anadolu.edu.tr";
@@ -62,7 +68,13 @@ fn persist_cookies(webview: &wry::WebView, hosts: &Mutex<HashSet<String>>) {
 }
 
 fn main() -> wry::Result<()> {
-    let event_loop = EventLoop::new();
+    // Yeniden başlatma sonrası eski sürecin kapanması için kısa bekleme.
+    if std::env::args().any(|a| a == "--delay") {
+        std::thread::sleep(Duration::from_millis(1500));
+    }
+
+    let event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
+    let proxy = event_loop.create_proxy();
     let window = WindowBuilder::new()
         .with_title("AOF e-Kampus")
         .with_inner_size(LogicalSize::new(1200.0, 800.0))
@@ -79,11 +91,10 @@ fn main() -> wry::Result<()> {
 
     let builder = WebViewBuilder::new_with_web_context(&mut context).with_url(START_URL);
 
-    // Tarayıcı dili Türkçe: Accept-Language ve site dili tr-TR olur.
+    // Tarayıcı dili (varsayılan Türkçe); sağ tık menüsünden değiştirilebilir.
+    let current_lang = lang::load(&data_dir());
     #[cfg(windows)]
-    let builder = builder.with_additional_browser_args(
-        "--lang=tr-TR --accept-lang=tr-TR,tr --disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection",
-    );
+    let builder = builder.with_additional_browser_args(lang::browser_args(&current_lang));
 
     let webview = builder
         .with_navigation_handler(move |url| {
@@ -96,6 +107,12 @@ fn main() -> wry::Result<()> {
         })
         .build(&window)?;
 
+    let menu_proxy = proxy.clone();
+    let _ = lang::install_menu(&webview, current_lang, move |code| {
+        lang::save(&data_dir(), code);
+        let _ = menu_proxy.send_event(UserEvent::Restart);
+    });
+
     let mut next_save = Instant::now() + SAVE_INTERVAL;
 
     event_loop.run(move |event, _, control_flow| {
@@ -105,6 +122,14 @@ fn main() -> wry::Result<()> {
             Event::NewEvents(_) if Instant::now() >= next_save => {
                 persist_cookies(&webview, &hosts);
                 next_save = Instant::now() + SAVE_INTERVAL;
+            }
+            Event::UserEvent(UserEvent::Restart) => {
+                // Dil, tarayıcı başlarken uygulandığı için uygulama yeniden açılır.
+                persist_cookies(&webview, &hosts);
+                if let Ok(exe) = std::env::current_exe() {
+                    let _ = std::process::Command::new(exe).arg("--delay").spawn();
+                }
+                *control_flow = ControlFlow::Exit;
             }
             Event::WindowEvent {
                 event: WindowEvent::CloseRequested,

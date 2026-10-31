@@ -10,6 +10,7 @@ AOF e-Kampus: a Rust (tao + wry/WebView2) desktop wrapper around
 ## Layout
 
 - `src/main.rs` – the whole app: window, webview, cookie persistence, language.
+- `src/lang.rs` – language list, saved choice (`language.txt`), WebView2 right-click "Dil / Language" submenu.
 - `build.rs` – embeds `assets/icon.ico` into the exe (Windows).
 - `installer/aof-ekampus.wxs` – WiX 3 MSI definition.
 - `installer/aof-ekampus.nsi` – NSIS installer script.
