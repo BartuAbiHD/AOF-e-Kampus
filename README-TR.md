@@ -35,7 +35,7 @@ cargo build --release
 ### Kurulum dosyaları
 
 `Installers.bat` uygulamayı derler ve `dist/` içine iki kurulum dosyasını üretir.
-[WiX Toolset 3.11](https://wixtoolset.org/) (MSI) ve
+[WiX Toolset 3.x](https://wixtoolset.org/) (MSI) ve
 [NSIS](https://nsis.sourceforge.io/) (kurulum `.exe`) gerekir.
 
 ## Veri konumu

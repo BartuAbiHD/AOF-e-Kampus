@@ -21,7 +21,7 @@ AOF e-Kampus: a Rust (tao + wry/WebView2) desktop wrapper around
 
 - Build: `cargo build --release`
 - Run: `cargo run --release`
-- Installers: `Installers.bat` (needs WiX 3.11 and NSIS)
+- Installers: `Installers.bat` (needs WiX 3.x and NSIS)
 
 ## Conventions
 

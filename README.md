@@ -35,7 +35,7 @@ The executable is `target/release/aof-ekampus.exe`.
 ### Installers
 
 `Installers.bat` builds the app and produces both installers in `dist/`.
-It needs [WiX Toolset 3.11](https://wixtoolset.org/) (MSI) and
+It needs [WiX Toolset 3.x](https://wixtoolset.org/) (MSI) and
 [NSIS](https://nsis.sourceforge.io/) (setup `.exe`).
 
 ## Data location

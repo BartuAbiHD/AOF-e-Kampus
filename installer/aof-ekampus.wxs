@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="AOF e-Kampus" Language="1055" Codepage="1254" Version="1.0.0"
+  <Product Id="*" Name="AOF e-Kampus" Language="1055" Codepage="1254" Version="1.0.1"
            Manufacturer="AOF e-Kampus" UpgradeCode="6F1B7C52-3A4E-4D8B-9C21-5E0A7B9D4F13">
     <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" />
     <MajorUpgrade DowngradeErrorMessage="Daha yeni bir sürüm zaten yüklü." />

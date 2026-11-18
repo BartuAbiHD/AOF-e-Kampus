@@ -3,9 +3,7 @@
 mod lang;
 
 use std::{
-    collections::HashSet,
     path::PathBuf,
-    sync::{Arc, Mutex},
     time::{Duration, Instant},
 };
 
@@ -24,7 +22,6 @@ enum UserEvent {
 }
 
 const START_URL: &str = "https://ekampus.anadolu.edu.tr";
-const ALLOWED_HOST: &str = "anadolu.edu.tr";
 const SESSION_DAYS: i64 = 30;
 const SAVE_INTERVAL: Duration = Duration::from_secs(60);
 
@@ -43,26 +40,18 @@ fn load_icon() -> Option<Icon> {
     Icon::from_rgba(img.into_raw(), w, h).ok()
 }
 
-fn host_of(url: &str) -> Option<String> {
-    let rest = url.split_once("://")?.1;
-    let host = rest.split(['/', '?', '#']).next()?;
-    Some(host.split(':').next()?.to_string())
-}
-
 /// Oturum çerezlerinin (süresi olmayan) tarayıcı kapanınca silinmemesi için
 /// bunları kalıcı çerez olarak yeniden yazar.
-fn persist_cookies(webview: &wry::WebView, hosts: &Mutex<HashSet<String>>) {
+fn persist_cookies(webview: &wry::WebView) {
     let expires = OffsetDateTime::now_utc() + wry::cookie::time::Duration::days(SESSION_DAYS);
-    let hosts: Vec<String> = hosts.lock().unwrap().iter().cloned().collect();
-    for host in hosts {
-        let Ok(cookies) = webview.cookies_for_url(&format!("https://{host}/")) else {
-            continue;
-        };
-        for mut c in cookies {
-            if c.expires().is_none() {
-                c.set_expires(expires);
-                let _ = webview.set_cookie(&c);
-            }
+    let Ok(cookies) = webview.cookies() else {
+        return;
+    };
+    for mut c in cookies {
+        // wry oturum çerezlerini `Expiration::Session` olarak bildirir.
+        if c.expires_datetime().is_none() {
+            c.set_expires(expires);
+            let _ = webview.set_cookie(&c);
         }
     }
 }
@@ -85,10 +74,6 @@ fn main() -> wry::Result<()> {
     // Kalıcı veri klasörü: çerezler ve oturum burada saklanır.
     let mut context = WebContext::new(Some(data_dir()));
 
-    let hosts: Arc<Mutex<HashSet<String>>> = Arc::new(Mutex::new(HashSet::new()));
-    hosts.lock().unwrap().insert(host_of(START_URL).unwrap());
-    let nav_hosts = hosts.clone();
-
     let builder = WebViewBuilder::new_with_web_context(&mut context).with_url(START_URL);
 
     // Tarayıcı dili (varsayılan Türkçe); sağ tık menüsünden değiştirilebilir.
@@ -97,14 +82,6 @@ fn main() -> wry::Result<()> {
     let builder = builder.with_additional_browser_args(lang::browser_args(&current_lang));
 
     let webview = builder
-        .with_navigation_handler(move |url| {
-            if let Some(h) = host_of(&url) {
-                if h.ends_with(ALLOWED_HOST) {
-                    nav_hosts.lock().unwrap().insert(h);
-                }
-            }
-            true
-        })
         .build(&window)?;
 
     let menu_proxy = proxy.clone();
@@ -120,12 +97,12 @@ fn main() -> wry::Result<()> {
 
         match event {
             Event::NewEvents(_) if Instant::now() >= next_save => {
-                persist_cookies(&webview, &hosts);
+                persist_cookies(&webview);
                 next_save = Instant::now() + SAVE_INTERVAL;
             }
             Event::UserEvent(UserEvent::Restart) => {
                 // Dil, tarayıcı başlarken uygulandığı için uygulama yeniden açılır.
-                persist_cookies(&webview, &hosts);
+                persist_cookies(&webview);
                 if let Ok(exe) = std::env::current_exe() {
                     let _ = std::process::Command::new(exe).arg("--delay").spawn();
                 }
@@ -135,7 +112,7 @@ fn main() -> wry::Result<()> {
                 event: WindowEvent::CloseRequested,
                 ..
             } => {
-                persist_cookies(&webview, &hosts);
+                persist_cookies(&webview);
                 *control_flow = ControlFlow::Exit;
             }
             _ => {}

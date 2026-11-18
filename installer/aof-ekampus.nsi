@@ -2,7 +2,7 @@ Unicode true
 !include "MUI2.nsh"
 
 !define APPNAME "AOF e-Kampus"
-!define VERSION "1.0.0"
+!define VERSION "1.0.1"
 !define EXE "aof-ekampus.exe"
 !define UNINSTKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 
